@@ -1,18 +1,27 @@
-import express from 'express';
-import { addProduct, deleteProduct, getProduct, getProducts, updateProduct } from '../controller/product.js';
-import upload from '../utils/productImage.js';
-import { verifyAdmin, verifyToken, verifyUser } from '../utils/verifyToken.js';
+import express from "express";
+import {
+  addProduct,
+  deleteProduct,
+  getProduct,
+  getProducts,
+  placeOrder,
+  updateProduct,
+} from "../controller/product.js";
+import upload from "../utils/productImage.js";
+import { verifyAdmin, verifyToken, verifyUser } from "../utils/verifyToken.js";
 
 const router = express.Router();
 
-router.post('/',verifyToken,verifyAdmin,upload, addProduct)
+router.post("/", verifyToken, verifyAdmin, upload, addProduct);
 
-router.put('/:id',verifyUser,verifyAdmin,upload, updateProduct)
+router.put("/:id", verifyUser, verifyAdmin, upload, updateProduct);
 
-router.delete('/:id',verifyUser,verifyAdmin, deleteProduct)
+router.delete("/:id", verifyUser, verifyAdmin, deleteProduct);
 
-router.get('/:id', getProduct)
+router.get("/:id", getProduct);
 
-router.get('/', getProducts)
+router.get("/", getProducts);
+
+router.post("/place-order/", verifyUser, placeOrder);
 
 export default router;
