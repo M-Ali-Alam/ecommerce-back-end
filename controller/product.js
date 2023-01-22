@@ -1,17 +1,25 @@
 import Product from "../models/Product.js";
 import Order from "../models/Orders.js";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
+import { env } from "process";
 
 export const placeOrder = async (req, res, next) => {
+  console.log(req.body);
+  const obj = jwt.verify(req.body.token, env.JWT);
+  console.log("req.body");
+  console.log(req.body);
+
   const products = [];
   req.body.orderDetails.forEach(async (product) => {
     products.push(
       await Product.findById({ _id: mongoose.Types.ObjectId(product._id) })
     );
   });
+
   const order = new Order({
     products: products,
-    user: req.body.user,
+    user: obj.id,
   });
   try {
     const savedOrder = await order.save();
@@ -22,17 +30,21 @@ export const placeOrder = async (req, res, next) => {
 };
 
 export const addProduct = async (req, res, next) => {
+  console.log("req");
+  console.log(req);
   const product = new Product({
     name: req.body.name,
     image: req.file.path,
-    price: req.body.price,
-    desc: req.body.desc,
+    price: Number(req.body.price),
+    desc: req.body.description,
     category: req.body.category,
   });
   try {
     const savedProduct = await product.save();
     res.status(200).json(savedProduct);
   } catch (error) {
+    console.log("error");
+    console.log(error);
     next(error);
   }
 };
@@ -60,6 +72,7 @@ export const updateProduct = async (req, res, next) => {
 
 export const deleteProduct = async (req, res, next) => {
   try {
+    console.log(req.params);
     await Product.findByIdAndDelete(req.params.id);
     res.status(200).json("Product has been deleted");
   } catch (error) {

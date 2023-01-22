@@ -7,6 +7,11 @@ export const register = async (req, res, next) => {
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(req.body.password, salt);
   try {
+    const alreadyExists = User.find({ username: req.body.username });
+    if (alreadyExists) {
+      res.send("already exists");
+    }
+
     const user = new User({
       username: req.body.username,
       phone: req.body.phone,
@@ -16,12 +21,10 @@ export const register = async (req, res, next) => {
       isAdmin: req.body.isAdmin,
     });
     await user.save();
-    res
-      .status(200)
-      .send({
-        success: true,
-        message: "User has been registered successfully",
-      });
+    res.status(200).send({
+      success: true,
+      message: "User has been registered successfully",
+    });
   } catch (error) {
     next(error);
   }
@@ -31,33 +34,27 @@ export const login = async (req, res, next) => {
   try {
     const user = await User.findOne({ username: req.body.username });
     if (!user) {
-      return next(createError(404, "User not found!"));
+      return res.send("Invalid Credentials");
     }
     const isPasswordCorrect = await bcrypt.compare(
       req.body.password,
       user.password
     );
     if (!isPasswordCorrect) {
-      return next(createError(400, "Wrong password or username!"));
+      return res.send("Invalid Credentials");
     }
 
     const token = jwt.sign(
       { id: user._id, isAdmin: user.isAdmin },
-      process.env.JWT,
-      { expiresIn: 3600, algorithm: "HS512" }
+      process.env.JWT
     );
-    const { password, isAdmin, ...otherDetails } = user._doc;
-    res
-      .cookie("access_token", token, {
-        httpOnly: true,
-      })
-      .status(200)
-      .send({
-        details: { ...otherDetails },
-        isAdmin,
-        success: true,
+    res.status(200).json({
+      header: { message: "success" },
+      body: {
         token: token,
-      });
+        type: user.isAdmin ? "admin" : "user",
+      },
+    });
   } catch (error) {
     next(error);
   }

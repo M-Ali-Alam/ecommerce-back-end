@@ -12,16 +12,17 @@ import { verifyAdmin, verifyToken, verifyUser } from "../utils/verifyToken.js";
 
 const router = express.Router();
 
-router.post("/", verifyToken, verifyAdmin, upload, addProduct);
+router.post("/", verifyAdmin, upload, addProduct);
+// router.post("/", verifyAdmin, addProduct);
 
-router.put("/:id", verifyUser, verifyAdmin, upload, updateProduct);
+router.put("/:id", verifyAdmin, upload, updateProduct);
 
-router.delete("/:id", verifyUser, verifyAdmin, deleteProduct);
+router.delete("/:id", verifyAdmin, deleteProduct);
 
 router.get("/:id", getProduct);
 
 router.get("/", getProducts);
 
-router.post("/place-order/", verifyUser, placeOrder);
+router.post("/place-order/", placeOrder);
 
 export default router;
