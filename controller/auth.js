@@ -8,8 +8,9 @@ export const register = async (req, res, next) => {
   const hash = bcrypt.hashSync(req.body.password, salt);
   try {
     const alreadyExists = User.find({ username: req.body.username });
-    if (alreadyExists) {
+    if (alreadyExists?.length > 0) {
       res.send("already exists");
+      return;
     }
 
     const user = new User({
