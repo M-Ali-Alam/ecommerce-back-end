@@ -13,7 +13,6 @@ import { verifyAdmin, verifyToken, verifyUser } from "../utils/verifyToken.js";
 const router = express.Router();
 
 router.post("/", verifyAdmin, upload, addProduct);
-// router.post("/", verifyAdmin, addProduct);
 
 router.put("/:id", verifyAdmin, upload, updateProduct);
 

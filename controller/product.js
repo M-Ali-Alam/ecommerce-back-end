@@ -10,12 +10,10 @@ export const placeOrder = async (req, res, next) => {
   console.log("req.body");
   console.log(req.body);
 
-  const products = [];
-  req.body.orderDetails.forEach(async (product) => {
-    products.push(
-      await Product.findById({ _id: mongoose.Types.ObjectId(product._id) })
-    );
-  });
+  const products = req.body.orderDetails;
+
+  console.log("products");
+  console.log(products);
 
   const order = new Order({
     products: products,
